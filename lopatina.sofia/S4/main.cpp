@@ -1,4 +1,31 @@
 #include <iostream>
+#include <cassert>
+#include <string>
+
+// tree_node.hpp
+
+template < typename Key, typename Value >
+struct TreeNode
+{
+  std::pair< Key, Value > data_;
+  TreeNode< Key, Value > * left_;
+  TreeNode< Key, Value > * right_;
+  TreeNode< Key, Value > * parent_;
+
+  TreeNode(const Key & key, const Value & val) :
+    left_(nullptr),
+    right_(nullptr),
+    parent_(nullptr)
+  {
+    data_ = std::make_pair(key, val);
+  }
+};
+
+// tree_iterator.hpp
+
+// const_tree_iterator.hpp
+
+// tree.hpp
 
 int main(int argc, char ** argv)
 {
