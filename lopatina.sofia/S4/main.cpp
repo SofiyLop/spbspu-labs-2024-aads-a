@@ -1,11 +1,50 @@
 #include <iostream>
+#include <fstream>
 #include <cassert>
 #include <string>
+//
+#include <map>
+#include <limits>
+//
 #include "tree_node.hpp"
 #include "tree_iterator.hpp"
 #include "const_tree_iterator.hpp"
 
-// tree.hpp
+//tree.hpp
+
+void inputTrees(std::istream & in, std::map< std::string, std::map< int, std::string > > & trees)
+{
+  std::string tree_name = "";
+  while (in >> tree_name)
+  {
+    std::map< int, std::string > tree;
+    int key = 0;
+    std::string value = "";
+    while (in >> key >> value)
+    {
+      tree.insert(std::make_pair(key, value));
+    }
+    if (!in && !in.eof())
+    {
+      in.clear();
+    }
+    trees.insert(std::make_pair(tree_name, tree));
+  }
+}
+
+void outputTree(const std::map< std::string, std::map< int, std::string > > & trees)
+{
+  for (auto it = trees.begin(); it != trees.end(); ++it)
+  {
+    std::cout << (*it).first << ":\n";
+    std::map< int, std::string > tree = (*it).second;
+    for (auto it0 = tree.begin(); it0 != tree.end(); ++it0)
+    {
+      std::cout << (*it0).first << " " << (*it0).second << "; ";
+    }
+    std::cout << "\n";
+  }
+}
 
 int main(int argc, char ** argv)
 {
@@ -21,9 +60,12 @@ int main(int argc, char ** argv)
     return 1;
   }
   // считывание данных из файла в деревья функция input
+  // все map нужно заменить на tree!!!
+  std::map< std::string, std::map< int, std::string > > trees;
+  inputTrees(input, trees);
+  outputTree(trees);
 
-
-
+/*
   std::map< std::string, std::function< void(std::istream &, std::ostream &) > > cmds;
   {
     using namespace std::placeholders;
@@ -45,6 +87,7 @@ int main(int argc, char ** argv)
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }
-  return 0;
+*/
 
+  return 0;
 }
