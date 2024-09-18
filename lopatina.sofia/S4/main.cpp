@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cassert>
 #include <string>
+#include <functional>
 //
 #include <map>
 #include <limits>
@@ -11,6 +12,27 @@
 #include "const_tree_iterator.hpp"
 
 //tree.hpp
+
+void printCmd(const std::map< std::string, std::map< int, std::string > > & trees, std::istream & in, std::ostream & out)
+{
+  std::string tree_name = "";
+  in >> tree_name;
+  if (!in || trees.find(tree_name) == trees.end())
+  {
+    throw std::logic_error("<INVALID COMMAND>");
+  }
+  out << tree_name;
+  std::map< int, std::string > tree = trees.at(tree_name);
+  if (!tree.empty())
+  {
+    for (auto iter = tree.begin(); iter != tree.end(); ++iter)
+    {
+      out << " " << (*iter).first << " " << (*iter).second;
+    }
+  }
+  out << '\n';
+}
+
 
 void inputTrees(std::istream & in, std::map< std::string, std::map< int, std::string > > & trees)
 {
@@ -65,14 +87,14 @@ int main(int argc, char ** argv)
   inputTrees(input, trees);
   outputTree(trees);
 
-/*
+  //система команд
   std::map< std::string, std::function< void(std::istream &, std::ostream &) > > cmds;
   {
     using namespace std::placeholders;
-    cmds["print"] = std::bind(lopatina::areaCmd, figures, _1, _2);
-    cmds["complement"] = std::bind(lopatina::maxCmd, figures, _1, _2);
-    cmds["intersect"] = std::bind(lopatina::minCmd, figures, _1, _2);
-    cmds["union"] = std::bind(lopatina::countCmd, figures, _1, _2);
+    cmds["print"] = std::bind(printCmd, trees, _1, _2);
+    //cmds["complement"] = std::bind(complementCmd, _1, _2);
+    //cmds["intersect"] = std::bind(intersectCmd, _1, _2);
+    //cmds["union"] = std::bind(unionCmd, _1, _2);
   }
   std::string cmd;
   while (std::cin >> cmd)
@@ -87,7 +109,6 @@ int main(int argc, char ** argv)
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }
-*/
 
   return 0;
 }
