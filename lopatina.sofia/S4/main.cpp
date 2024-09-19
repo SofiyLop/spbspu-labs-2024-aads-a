@@ -21,18 +21,70 @@ void printCmd(const std::map< std::string, std::map< int, std::string > > & tree
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
-  out << tree_name;
   std::map< int, std::string > tree = trees.at(tree_name);
-  if (!tree.empty())
+  if (tree.empty())
   {
-    for (auto iter = tree.begin(); iter != tree.end(); ++iter)
-    {
-      out << " " << (*iter).first << " " << (*iter).second;
-    }
+    throw std::logic_error("<EMPTY>");
+  }
+  out << tree_name;
+  for (auto iter = tree.begin(); iter != tree.end(); ++iter)
+  {
+    out << " " << (*iter).first << " " << (*iter).second;
   }
   out << '\n';
 }
 
+void complementCmd(std::map< std::string, std::map< int, std::string > > & trees, std::istream & in)
+{
+  std::string newdataset = "", dataset1 = "", dataset2 = "";
+  in >> newdataset >> dataset1 >> dataset2;
+  if (!in || trees.find(dataset1) == trees.end() || trees.find(dataset2) == trees.end())
+  {
+    throw std::logic_error("<INVALID COMMAND>");
+  }
+  std::map< int, std::string > complement_tree = trees.at(dataset1);
+  std::map< int, std::string > tree2 = trees.at(dataset2);
+  for (auto iter = tree2.begin(); iter != tree2.end(); ++iter)
+  {
+    int key = (*iter).first;
+    if (complement_tree.find(key) != complement_tree.end())
+    {
+      complement_tree.erase(key);
+    }
+    else
+    {
+      complement_tree.insert(std::make_pair(key, (*iter).second));
+    }
+  }
+  trees.insert(std::make_pair(newdataset, complement_tree));
+}
+
+void intersectCmd(std::map< std::string, std::map< int, std::string > > & trees, std::istream & in)
+{
+  std::string newdataset = "", dataset1 = "", dataset2 = "";
+  in >> newdataset >> dataset1 >> dataset2;
+  if (!in || trees.find(dataset1) == trees.end() || trees.find(dataset2) == trees.end())
+  {
+    throw std::logic_error("<INVALID COMMAND>");
+  }
+  std::map< int, std::string > tree1 = trees.at(dataset1);
+  std::map< int, std::string > tree2 = trees.at(dataset2);
+  std::map< int, std::string > intersect_tree(tree1);
+  for (auto iter = tree1.begin(); iter != tree1.end(); ++iter)
+  {
+    int key = (*iter).first;
+    if (tree2.find(key) == tree2.end())
+    {
+      intersect_tree.erase(key);
+    }
+  }
+  trees.insert(std::make_pair(newdataset, intersect_tree));
+}
+
+void unionCmd(std::map< std::string, std::map< int, std::string > > & trees, std::istream & in)
+{
+
+}
 
 void inputTrees(std::istream & in, std::map< std::string, std::map< int, std::string > > & trees)
 {
@@ -64,7 +116,7 @@ void outputTree(const std::map< std::string, std::map< int, std::string > > & tr
     {
       std::cout << (*it0).first << " " << (*it0).second << "; ";
     }
-    std::cout << "\n";
+    std::cout << "\n\n";
   }
 }
 
@@ -88,27 +140,33 @@ int main(int argc, char ** argv)
   outputTree(trees);
 
   //система команд
-  std::map< std::string, std::function< void(std::istream &, std::ostream &) > > cmds;
+  std::map< std::string, std::function< void(std::map< std::string, std::map< int, std::string > > &, std::istream &, std::ostream &) > > cmds;
   {
     using namespace std::placeholders;
-    cmds["print"] = std::bind(printCmd, trees, _1, _2);
-    //cmds["complement"] = std::bind(complementCmd, _1, _2);
-    //cmds["intersect"] = std::bind(intersectCmd, _1, _2);
-    //cmds["union"] = std::bind(unionCmd, _1, _2);
+    cmds["print"] = std::bind(printCmd, _1, _2, _3);
+    cmds["complement"] = std::bind(complementCmd, _1, _2);
+    cmds["intersect"] = std::bind(intersectCmd, _1, _2);
+    cmds["union"] = std::bind(unionCmd, _1, _2);
   }
   std::string cmd;
   while (std::cin >> cmd)
   {
     try
     {
-      cmds.at(cmd)(std::cin, std::cout);
+      if (cmds.find(cmd) != cmds.end())
+      {
+        cmds.at(cmd)(trees, std::cin, std::cout);
+      }
+      else
+      {
+        throw std::logic_error("<INVALID COMMAND>");
+      }
     }
-    catch (...)
+    catch (const std::exception & e)
     {
-      std::cout << "<INVALID COMMAND>\n";
+      std::cout << e.what() << '\n';
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }
-
   return 0;
 }
