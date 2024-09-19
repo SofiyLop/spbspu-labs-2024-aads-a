@@ -83,7 +83,23 @@ void intersectCmd(std::map< std::string, std::map< int, std::string > > & trees,
 
 void unionCmd(std::map< std::string, std::map< int, std::string > > & trees, std::istream & in)
 {
-
+  std::string newdataset = "", dataset1 = "", dataset2 = "";
+  in >> newdataset >> dataset1 >> dataset2;
+  if (!in || trees.find(dataset1) == trees.end() || trees.find(dataset2) == trees.end())
+  {
+    throw std::logic_error("<INVALID COMMAND>");
+  }
+  std::map< int, std::string > union_tree = trees.at(dataset1);
+  std::map< int, std::string > tree2 = trees.at(dataset2);
+  for (auto iter = tree2.begin(); iter != tree2.end(); ++iter)
+  {
+    int key = (*iter).first;
+    if (union_tree.find(key) == union_tree.end())
+    {
+      union_tree.insert(std::make_pair(key, (*iter).second));
+    }
+  }
+  trees.insert(std::make_pair(newdataset, union_tree));
 }
 
 void inputTrees(std::istream & in, std::map< std::string, std::map< int, std::string > > & trees)
