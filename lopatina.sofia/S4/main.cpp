@@ -10,8 +10,7 @@
 #include "tree_node.hpp"
 #include "tree_iterator.hpp"
 #include "const_tree_iterator.hpp"
-
-//tree.hpp
+#include "tree.hpp"
 
 void printCmd(const std::map< std::string, std::map< int, std::string > > & trees, std::istream & in, std::ostream & out)
 {

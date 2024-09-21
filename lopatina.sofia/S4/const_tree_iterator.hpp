@@ -7,11 +7,13 @@
 
 namespace lopatina
 {
-  template < typename Key, typename Value >
+  template < typename Key, typename Value, typename Compare = std::less< Key > >
   struct ConstTreeIterator: public std::iterator< std::bidirectional_iterator_tag, Value >
   {
+    friend class Tree<Key, Value, Compare>;
+    friend struct TreeIterator<Key, Value, Compare>;
     public:
-    using this_t = ConstTreeIterator< Key, Value >;
+    using this_t = ConstTreeIterator< Key, Value, Compare >;
     ConstTreeIterator():
       node_(nullptr)
     {}
