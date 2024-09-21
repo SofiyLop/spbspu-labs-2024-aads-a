@@ -12,6 +12,8 @@
 #include "const_tree_iterator.hpp"
 #include "tree.hpp"
 
+using treeOfTrees = std::map< std::string, std::map< int, std::string > >;
+
 void printCmd(const std::map< std::string, std::map< int, std::string > > & trees, std::istream & in, std::ostream & out)
 {
   std::string tree_name = "";
@@ -155,7 +157,7 @@ int main(int argc, char ** argv)
   outputTree(trees);
 
   //система команд
-  std::map< std::string, std::function< void(std::map< std::string, std::map< int, std::string > > &, std::istream &, std::ostream &) > > cmds;
+  std::map< std::string, std::function< void(treeOfTrees &, std::istream &, std::ostream &) > > cmds;
   {
     using namespace std::placeholders;
     cmds["print"] = std::bind(printCmd, _1, _2, _3);
