@@ -590,6 +590,7 @@ namespace lopatina
       remove_node(position.node_);
       return next_pos;
     }
+    return position;
   }
 
   template < typename Key, typename Value, typename Compare >

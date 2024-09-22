@@ -3,18 +3,15 @@
 #include <cassert>
 #include <string>
 #include <functional>
-//
-#include <map>
 #include <limits>
-//
 #include "tree_node.hpp"
 #include "tree_iterator.hpp"
 #include "const_tree_iterator.hpp"
 #include "tree.hpp"
 
-using treeOfTrees = std::map< std::string, std::map< int, std::string > >;
+using treeOfTrees = lopatina::Tree< std::string, lopatina::Tree< int, std::string > >;
 
-void printCmd(const std::map< std::string, std::map< int, std::string > > & trees, std::istream & in, std::ostream & out)
+void printCmd(const treeOfTrees & trees, std::istream & in, std::ostream & out)
 {
   std::string tree_name = "";
   in >> tree_name;
@@ -22,7 +19,7 @@ void printCmd(const std::map< std::string, std::map< int, std::string > > & tree
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
-  std::map< int, std::string > tree = trees.at(tree_name);
+  lopatina::Tree< int, std::string > tree = trees.at(tree_name);
   if (tree.empty())
   {
     throw std::logic_error("<EMPTY>");
@@ -35,7 +32,7 @@ void printCmd(const std::map< std::string, std::map< int, std::string > > & tree
   out << '\n';
 }
 
-void complementCmd(std::map< std::string, std::map< int, std::string > > & trees, std::istream & in)
+void complementCmd(treeOfTrees & trees, std::istream & in)
 {
   std::string newdataset = "", dataset1 = "", dataset2 = "";
   in >> newdataset >> dataset1 >> dataset2;
@@ -43,8 +40,8 @@ void complementCmd(std::map< std::string, std::map< int, std::string > > & trees
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
-  std::map< int, std::string > complement_tree = trees.at(dataset1);
-  std::map< int, std::string > tree2 = trees.at(dataset2);
+  lopatina::Tree< int, std::string > complement_tree = trees.at(dataset1);
+  lopatina::Tree< int, std::string > tree2 = trees.at(dataset2);
   for (auto iter = tree2.begin(); iter != tree2.end(); ++iter)
   {
     int key = (*iter).first;
@@ -60,7 +57,7 @@ void complementCmd(std::map< std::string, std::map< int, std::string > > & trees
   trees.insert(std::make_pair(newdataset, complement_tree));
 }
 
-void intersectCmd(std::map< std::string, std::map< int, std::string > > & trees, std::istream & in)
+void intersectCmd(treeOfTrees & trees, std::istream & in)
 {
   std::string newdataset = "", dataset1 = "", dataset2 = "";
   in >> newdataset >> dataset1 >> dataset2;
@@ -68,9 +65,9 @@ void intersectCmd(std::map< std::string, std::map< int, std::string > > & trees,
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
-  std::map< int, std::string > tree1 = trees.at(dataset1);
-  std::map< int, std::string > tree2 = trees.at(dataset2);
-  std::map< int, std::string > intersect_tree(tree1);
+  lopatina::Tree< int, std::string > tree1 = trees.at(dataset1);
+  lopatina::Tree< int, std::string > tree2 = trees.at(dataset2);
+  lopatina::Tree< int, std::string > intersect_tree(tree1);
   for (auto iter = tree1.begin(); iter != tree1.end(); ++iter)
   {
     int key = (*iter).first;
@@ -82,7 +79,7 @@ void intersectCmd(std::map< std::string, std::map< int, std::string > > & trees,
   trees.insert(std::make_pair(newdataset, intersect_tree));
 }
 
-void unionCmd(std::map< std::string, std::map< int, std::string > > & trees, std::istream & in)
+void unionCmd(treeOfTrees & trees, std::istream & in)
 {
   std::string newdataset = "", dataset1 = "", dataset2 = "";
   in >> newdataset >> dataset1 >> dataset2;
@@ -90,8 +87,8 @@ void unionCmd(std::map< std::string, std::map< int, std::string > > & trees, std
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
-  std::map< int, std::string > union_tree = trees.at(dataset1);
-  std::map< int, std::string > tree2 = trees.at(dataset2);
+  lopatina::Tree< int, std::string > union_tree = trees.at(dataset1);
+  lopatina::Tree< int, std::string > tree2 = trees.at(dataset2);
   for (auto iter = tree2.begin(); iter != tree2.end(); ++iter)
   {
     int key = (*iter).first;
@@ -103,12 +100,12 @@ void unionCmd(std::map< std::string, std::map< int, std::string > > & trees, std
   trees.insert(std::make_pair(newdataset, union_tree));
 }
 
-void inputTrees(std::istream & in, std::map< std::string, std::map< int, std::string > > & trees)
+void inputTrees(std::istream & in, treeOfTrees & trees)
 {
   std::string tree_name = "";
   while (in >> tree_name)
   {
-    std::map< int, std::string > tree;
+    lopatina::Tree< int, std::string > tree;
     int key = 0;
     std::string value = "";
     while (in >> key >> value)
@@ -123,22 +120,10 @@ void inputTrees(std::istream & in, std::map< std::string, std::map< int, std::st
   }
 }
 
-void outputTree(const std::map< std::string, std::map< int, std::string > > & trees)
-{
-  for (auto it = trees.begin(); it != trees.end(); ++it)
-  {
-    std::cout << (*it).first << ":\n";
-    std::map< int, std::string > tree = (*it).second;
-    for (auto it0 = tree.begin(); it0 != tree.end(); ++it0)
-    {
-      std::cout << (*it0).first << " " << (*it0).second << "; ";
-    }
-    std::cout << "\n\n";
-  }
-}
-
 int main(int argc, char ** argv)
 {
+  using namespace lopatina;
+
   if (argc != 2)
   {
     std::cerr << "Wrong parameters\n";
@@ -150,14 +135,10 @@ int main(int argc, char ** argv)
     std::cerr << "No such file\n";
     return 1;
   }
-  // считывание данных из файла в деревья функция input
-  // все map нужно заменить на tree!!!
-  std::map< std::string, std::map< int, std::string > > trees;
+  treeOfTrees trees;
   inputTrees(input, trees);
-  outputTree(trees);
 
-  //система команд
-  std::map< std::string, std::function< void(treeOfTrees &, std::istream &, std::ostream &) > > cmds;
+  Tree< std::string, std::function< void(treeOfTrees &, std::istream &, std::ostream &) > > cmds;
   {
     using namespace std::placeholders;
     cmds["print"] = std::bind(printCmd, _1, _2, _3);
