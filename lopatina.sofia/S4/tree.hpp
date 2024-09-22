@@ -60,8 +60,8 @@ namespace lopatina
 
   private:
     TreeNode< Key, Value > * root_;
-    Compare comp_;
     size_t size_;
+    Compare comp_;
 
     void remove_node(TreeNode< Key, Value > * todelete);
     TreeNode< Key, Value > * search(const Key get_key) const;
@@ -85,7 +85,6 @@ namespace lopatina
   Tree< Key, Value, Compare >::Tree(const Tree & other):
     Tree()
   {
-    TreeNode< Key, Value > * newroot = other.root_;
     for (auto it = other.cbegin(); it != other.cend(); ++it)
     {
       push((*it).first, (*it).second);
