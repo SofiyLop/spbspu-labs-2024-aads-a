@@ -54,6 +54,7 @@ void complementCmd(treeOfTrees & trees, std::istream & in)
       complement_tree.insert(std::make_pair(key, (*iter).second));
     }
   }
+  trees.erase(newdataset);
   trees.insert(std::make_pair(newdataset, complement_tree));
 }
 
@@ -76,6 +77,7 @@ void intersectCmd(treeOfTrees & trees, std::istream & in)
       intersect_tree.erase(key);
     }
   }
+  trees.erase(newdataset);
   trees.insert(std::make_pair(newdataset, intersect_tree));
 }
 
@@ -97,6 +99,7 @@ void unionCmd(treeOfTrees & trees, std::istream & in)
       union_tree.insert(std::make_pair(key, (*iter).second));
     }
   }
+  trees.erase(newdataset);
   trees.insert(std::make_pair(newdataset, union_tree));
 }
 
