@@ -674,13 +674,15 @@ namespace lopatina
   }
 
   template < typename Key, typename Value, typename Compare >
-  std::pair< TreeIterator< Key, Value, Compare >, TreeIterator< Key, Value, Compare > > Tree< Key, Value, Compare >::equal_range(const Key & k)
+  std::pair< TreeIterator< Key, Value, Compare >, TreeIterator< Key, Value, Compare > >
+    Tree< Key, Value, Compare >::equal_range(const Key & k)
   {
     return std::pair<iterator, iterator>(lower_bound(k), upper_bound(k));
   }
 
   template < typename Key, typename Value, typename Compare >
-  std::pair< ConstTreeIterator< Key, Value, Compare >, ConstTreeIterator< Key, Value, Compare > > Tree< Key, Value, Compare >::equal_range(const Key & k) const
+  std::pair< ConstTreeIterator< Key, Value, Compare >, ConstTreeIterator< Key, Value, Compare > >
+    Tree< Key, Value, Compare >::equal_range(const Key & k) const
   {
     return std::pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
   }
